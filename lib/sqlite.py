@@ -1,4 +1,6 @@
+import os
 import sqlite3
+import uuid
 from lib.entity import *
 from lib.database import Database
 
