@@ -29,10 +29,10 @@ def print_users(users: Users):
 
 def __main__():
     d = Sqlite(DATABASE_NAME)
-    #d.recreate_database()
+    d.recreate_database()
     d.connect()
     order_service = OrdersService(DATA_FILE_NAME, d)
-    #order_service.load_data()
+    order_service.load_data()
     
     orders = order_service.database.get_orders_for_date('2018-10-01', '2018-10-31')
     print_orders(orders)
