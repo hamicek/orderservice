@@ -34,10 +34,10 @@ def __main__():
     order_service = OrdersService(DATA_FILE_NAME, d)
     order_service.load_data()
     
-    orders = order_service.database.get_orders_for_date('2018-10-01', '2018-10-31')
+    orders = order_service.storage.get_orders_for_date('2018-10-01', '2018-10-31')
     print_orders(orders)
 
-    users = order_service.database.get_users_with_best_purchases()
+    users = order_service.storage.get_users_with_best_purchases()
     print_users(users)
     d.close()
 

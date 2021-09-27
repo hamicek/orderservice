@@ -2,10 +2,10 @@ import os
 import sqlite3
 import uuid
 from lib.entity import *
-from lib.database import Database
+from lib.storage import Storage
 
 
-class Sqlite(Database):
+class Sqlite(Storage):
     def __init__(self, name: str):
         self.name = name
         self.connection = None

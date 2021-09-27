@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from lib.entity import *
 
 
-class Database(ABC):
+class Storage(ABC):
 
     @abstractmethod
     def save_order(self, order: Order):
