@@ -31,7 +31,7 @@ class OrdersService():
     def get_orders_for_date(self, date_from: str, date_to: str) -> Orders:
         return self.storage.get_orders_for_date(date_from, date_to)
 
-    def get_users_with_best_purchases(self, count=3) -> Users:
+    def get_users_with_best_purchases(self, count: int=3) -> Users:
         return self.storage.get_users_with_best_purchases(count)
 
     def _get_formated_time(self, timestamp: int):

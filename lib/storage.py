@@ -13,7 +13,7 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def get_users_with_best_purchases(self, count=3) -> Users:
+    def get_users_with_best_purchases(self, count: int=3) -> Users:
         pass
 
     @abstractmethod

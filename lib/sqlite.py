@@ -18,7 +18,7 @@ class Sqlite(Storage):
             cur.execute("INSERT OR IGNORE INTO products VALUES (?, ?)", (p.product_id, p.name))
             cur.execute("INSERT INTO order_products VALUES (?, ?, ?, ?)", (str(uuid.uuid1()), order.order_id, p.product_id, p.price))
 
-    def get_orders_for_date(self, date_from: str, date_to: str, cnt=10) -> Orders:
+    def get_orders_for_date(self, date_from: str, date_to: str, cnt: int=10) -> Orders:
         cur = self.get_cursor()
         sql = '''SELECT
                     o.id,
@@ -59,7 +59,7 @@ class Sqlite(Storage):
             orders.add_order(order)
         return orders
 
-    def get_users_with_best_purchases(self, count=3) -> Users:
+    def get_users_with_best_purchases(self, count: int=3) -> Users:
         cur = self.get_cursor()
         sql = '''SELECT
                     min(u.id),
