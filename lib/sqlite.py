@@ -99,8 +99,10 @@ class Sqlite(Storage):
         return self.connection.cursor()
 
     def close(self):
-        self.__commit()
-        self.__close_database()
+        try:
+            self.__commit()
+        finally:
+            self.__close_database()
 
     def recreate_database(self):
         self.drop_database()
