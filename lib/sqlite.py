@@ -16,8 +16,8 @@ class Sqlite(Storage):
         cur.execute("INSERT INTO orders VALUES (?, ?, ?)", (order.order_id, order.created, order.user.user_id))
         cur.execute("INSERT OR IGNORE INTO users VALUES (?, ?, ?)", (order.user.user_id, order.user.name, order.user.city))
         for p in order.products:
-            cur.execute("INSERT OR IGNORE INTO products VALUES (?, ?)", (p.product_id, p.name))
-            cur.execute("INSERT INTO order_products VALUES (?, ?, ?, ?)", (str(uuid.uuid1()), order.order_id, p.product_id, p.price))
+            cur.execute("INSERT OR IGNORE INTO products VALUES (?, ?, ?)", (p.product_id, p.name, p.price))
+            cur.execute("INSERT INTO order_products VALUES (?, ?, ?)", (str(uuid.uuid1()), order.order_id, p.product_id))
 
     def get_orders_for_date(self, date_from: datetime, date_to: datetime, cnt: int=10) -> Orders:
         cur = self._get_cursor()
@@ -29,7 +29,7 @@ class Sqlite(Storage):
                     u.city,
                     op.id,
                     p.name,
-                    op.price
+                    p.price
                  FROM order_products as op
                     LEFT JOIN orders as o ON (op.order_id = o.id)
                     LEFT JOIN users as u ON (o.user_id = u.id)
@@ -66,10 +66,11 @@ class Sqlite(Storage):
                     min(u.id),
                     min(u.name),
                     min(u.city),
-                    sum(op.price) as sp
+                    sum(p.price) as sp
                  FROM order_products as op
                     LEFT JOIN orders as o ON (op.order_id = o.id)
                     LEFT JOIN users as u ON (o.user_id = u.id)
+                    LEFT JOIN products as p ON (op.product_id = p.id)
                  GROUP BY u.id
                  ORDER BY sp DESC
                  LIMIT ?
@@ -115,9 +116,9 @@ class Sqlite(Storage):
         cur.execute('''CREATE TABLE users 
                (id integer, name string, city text, UNIQUE(id, name, city))''')
         cur.execute('''CREATE TABLE products
-               (id integer, name string, UNIQUE(id, name))''')
+               (id integer, name string, price real, UNIQUE(id, name))''')
         cur.execute('''CREATE TABLE order_products
-               (id string, order_id integer, product_id, price real)''')
+               (id string, order_id integer, product_id)''')
         self.__commit()
 
     def __commit(self):
