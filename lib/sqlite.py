@@ -111,11 +111,11 @@ class Sqlite(Storage):
 
     def create_database(self):
         cur = self._get_cursor()
-        cur.execute('''CREATE TABLE orders (id integer, created integer, user_id integer)''')
+        cur.execute('''CREATE TABLE orders (id integer, created string, user_id integer)''')
         cur.execute('''CREATE TABLE users 
-               (id integer, name integer, city text, UNIQUE(id, name, city))''')
+               (id integer, name string, city text, UNIQUE(id, name, city))''')
         cur.execute('''CREATE TABLE products
-               (id integer, name integer, UNIQUE(id, name))''')
+               (id integer, name string, UNIQUE(id, name))''')
         cur.execute('''CREATE TABLE order_products
                (id string, order_id integer, product_id, price real)''')
         self.__commit()
