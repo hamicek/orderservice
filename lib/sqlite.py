@@ -36,13 +36,19 @@ class Sqlite(Storage):
                     LEFT JOIN users as u ON (o.user_id = u.id)
                     LEFT JOIN products as p ON (op.product_id = p.id)
                  WHERE 
-                    o.created>=? and o.created<=?
+                    o.created>=? and o.created<=? and
+                    o.id in (
+                        select id
+                        from orders
+                        WHERE created>=? and created<=?
+                        ORDER BY created
+                        LIMIT ?
+                    )
                  ORDER BY o.created
-                 LIMIT ?
                 ''' 
         
         orders = {}
-        for row in cur.execute(sql, (date_from, date_to, cnt)):
+        for row in cur.execute(sql, (date_from, date_to, date_from, date_to, cnt)):
             if row[0] not in orders:
                 orders[row[0]] = {
                     "order": {"id": row[0], "created": row[1]},
