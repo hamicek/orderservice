@@ -2,6 +2,7 @@ from lib.entity import *
 from lib.sqlite import Sqlite
 from lib.orders_service import OrdersService
 from lib.data_loader import DataLoader
+from datetime import datetime
 
 
 DATA_FILE_NAME = "data.ndjson.gz"
@@ -39,7 +40,9 @@ def __main__():
     order_service = OrdersService(d)
     order_service.load_data(orders)
     
-    orders = order_service.storage.get_orders_for_date('2018-10-01', '2018-10-31')
+    date_from = datetime.strptime('2018-10-01', "%Y-%m-%d")
+    date_to = datetime.strptime('2018-10-31', "%Y-%m-%d")
+    orders = order_service.storage.get_orders_for_date(date_from, date_to)
     print_orders(orders)
 
     users = order_service.storage.get_users_with_best_purchases()

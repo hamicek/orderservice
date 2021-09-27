@@ -3,6 +3,7 @@ import sqlite3
 import uuid
 from lib.entity import *
 from lib.storage import Storage
+from datetime import datetime
 
 
 class Sqlite(Storage):
@@ -11,15 +12,15 @@ class Sqlite(Storage):
         self.connection = None
 
     def save_order(self, order: Order):
-        cur = self.get_cursor()
+        cur = self._get_cursor()
         cur.execute("INSERT INTO orders VALUES (?, ?, ?)", (order.order_id, order.created, order.user.user_id))
         cur.execute("INSERT OR IGNORE INTO users VALUES (?, ?, ?)", (order.user.user_id, order.user.name, order.user.city))
         for p in order.products:
             cur.execute("INSERT OR IGNORE INTO products VALUES (?, ?)", (p.product_id, p.name))
             cur.execute("INSERT INTO order_products VALUES (?, ?, ?, ?)", (str(uuid.uuid1()), order.order_id, p.product_id, p.price))
 
-    def get_orders_for_date(self, date_from: str, date_to: str, cnt: int=10) -> Orders:
-        cur = self.get_cursor()
+    def get_orders_for_date(self, date_from: datetime, date_to: datetime, cnt: int=10) -> Orders:
+        cur = self._get_cursor()
         sql = '''SELECT
                     o.id,
                     o.created,
@@ -60,7 +61,7 @@ class Sqlite(Storage):
         return orders
 
     def get_users_with_best_purchases(self, count: int=3) -> Users:
-        cur = self.get_cursor()
+        cur = self._get_cursor()
         sql = '''SELECT
                     min(u.id),
                     min(u.name),
@@ -91,7 +92,7 @@ class Sqlite(Storage):
     def connect(self):
         self.connection = sqlite3.connect(self.name)
 
-    def get_cursor(self):
+    def _get_cursor(self):
         if not self.connection:
             self.connect()
         return self.connection.cursor()
@@ -109,7 +110,7 @@ class Sqlite(Storage):
             os.remove(self.name)
 
     def create_database(self):
-        cur = self.get_cursor()
+        cur = self._get_cursor()
         cur.execute('''CREATE TABLE orders (id integer, created integer, user_id integer)''')
         cur.execute('''CREATE TABLE users 
                (id integer, name integer, city text, UNIQUE(id, name, city))''')

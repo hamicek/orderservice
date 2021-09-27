@@ -1,6 +1,6 @@
 from lib.entity import *
 from lib.storage import Storage
-import datetime
+from datetime import datetime
 import json
 
 
@@ -15,7 +15,7 @@ class OrdersService():
         for order in self.orders:
             self.storage.save_order(order)
 
-    def get_orders_for_date(self, date_from: str, date_to: str) -> Orders:
+    def get_orders_for_date(self, date_from: datetime, date_to: datetime) -> Orders:
         return self.storage.get_orders_for_date(date_from, date_to)
 
     def get_users_with_best_purchases(self, count: int=3) -> Users:
@@ -37,4 +37,4 @@ class OrdersService():
             self.orders.add_order(new_order)
 
     def _get_formated_time(self, timestamp: int) -> str:
-        return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")

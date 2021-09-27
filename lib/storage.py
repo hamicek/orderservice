@@ -21,10 +21,6 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def get_cursor(self):
-        pass
-
-    @abstractmethod
     def close(self):
         pass
 
