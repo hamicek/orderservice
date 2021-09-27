@@ -13,11 +13,12 @@ class Sqlite(Storage):
 
     def save_order(self, order: Order):
         cur = self._get_cursor()
-        cur.execute("INSERT INTO orders VALUES (?, ?, ?)", (order.order_id, order.created, order.user.user_id))
-        cur.execute("INSERT OR IGNORE INTO users VALUES (?, ?, ?)", (order.user.user_id, order.user.name, order.user.city))
+        cur.execute('INSERT INTO orders VALUES (?, ?, ?)', (order.order_id, order.created, order.user.user_id))
+        cur.execute('INSERT OR IGNORE INTO users VALUES (?, ?, ?)', (order.user.user_id, order.user.name, order.user.city))
         for p in order.products:
-            cur.execute("INSERT OR IGNORE INTO products VALUES (?, ?, ?)", (p.product_id, p.name, p.price))
-            cur.execute("INSERT INTO order_products VALUES (?, ?, ?)", (str(uuid.uuid1()), order.order_id, p.product_id))
+            cur.execute('INSERT OR IGNORE INTO products VALUES (?, ?, ?)', (p.product_id, p.name, p.price))
+            cur.execute('INSERT OR IGNORE INTO order_products VALUES (?, ?)', 
+                (order.order_id, p.product_id))
 
     def get_orders_for_date(self, date_from: datetime, date_to: datetime, cnt: int=10) -> Orders:
         cur = self._get_cursor()
@@ -27,7 +28,7 @@ class Sqlite(Storage):
                     u.id,
                     u.name,
                     u.city,
-                    op.id,
+                    p.id,
                     p.name,
                     p.price
                  FROM order_products as op
@@ -114,13 +115,22 @@ class Sqlite(Storage):
 
     def create_database(self):
         cur = self._get_cursor()
-        cur.execute('''CREATE TABLE orders (id integer, created string, user_id integer)''')
         cur.execute('''CREATE TABLE users 
-               (id integer, name string, city text, UNIQUE(id, name, city))''')
+            (id integer NOT NULL PRIMARY KEY, name string, city text)
+            ''')
         cur.execute('''CREATE TABLE products
-               (id integer, name string, price real, UNIQUE(id, name))''')
+            (id integer NOT NULL PRIMARY KEY, name string, price real)
+            ''')
+        cur.execute('''CREATE TABLE orders 
+            (id integer NOT NULL PRIMARY KEY, created string, user_id integer,
+            FOREIGN KEY(user_id) REFERENCES users(id))
+            ''')
         cur.execute('''CREATE TABLE order_products
-               (id string, order_id integer, product_id)''')
+            (order_id integer NOT NULL, product_id NOT NULL,
+            PRIMARY KEY(order_id, product_id),
+            FOREIGN KEY(order_id) REFERENCES orders(id),
+            FOREIGN KEY(product_id) REFERENCES products(id))
+            ''')
         self.__commit()
 
     def __commit(self):
