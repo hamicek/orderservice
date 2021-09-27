@@ -12,11 +12,11 @@ class Sqlite(Storage):
 
     def save_order(self, order: Order):
         cur = self.get_cursor()
-        cur.execute("INSERT INTO orders VALUES ('%s','%s','%s')" % (order.order_id, order.created, order.user.user_id))
-        cur.execute("INSERT OR IGNORE INTO users VALUES ('%s','%s','%s')" % (order.user.user_id, order.user.name, order.user.city))
+        cur.execute("INSERT INTO orders VALUES (?, ?, ?)", (order.order_id, order.created, order.user.user_id))
+        cur.execute("INSERT OR IGNORE INTO users VALUES (?, ?, ?)", (order.user.user_id, order.user.name, order.user.city))
         for p in order.products:
-            cur.execute("INSERT OR IGNORE INTO products VALUES ('%s','%s')" % (p.product_id, p.name))
-            cur.execute("INSERT INTO order_products VALUES ('%s','%s','%s','%s')" % (uuid.uuid1(), order.order_id, p.product_id, p.price))
+            cur.execute("INSERT OR IGNORE INTO products VALUES (?, ?)", (p.product_id, p.name))
+            cur.execute("INSERT INTO order_products VALUES (?, ?, ?, ?)", (str(uuid.uuid1()), order.order_id, p.product_id, p.price))
 
     def get_orders_for_date(self, date_from: str, date_to: str, cnt=10) -> Orders:
         cur = self.get_cursor()
@@ -34,13 +34,13 @@ class Sqlite(Storage):
                     LEFT JOIN users as u ON (o.user_id = u.id)
                     LEFT JOIN products as p ON (op.product_id = p.id)
                  WHERE 
-                    o.created>="%s" and o.created<="%s"
+                    o.created>=? and o.created<=?
                  ORDER BY o.created
-                 LIMIT %s
-                ''' % (date_from, date_to, cnt)
+                 LIMIT ?
+                ''' 
         
         orders = {}
-        for row in cur.execute(sql):
+        for row in cur.execute(sql, (date_from, date_to, cnt)):
             if row[0] not in orders:
                 orders[row[0]] = {
                     "order": {"id": row[0], "created": row[1]},
@@ -71,11 +71,11 @@ class Sqlite(Storage):
                     LEFT JOIN users as u ON (o.user_id = u.id)
                  GROUP BY u.id
                  ORDER BY sp DESC
-                 LIMIT %s
-                ''' % (count)
+                 LIMIT ?
+                '''
 
         user_list = []
-        for row in cur.execute(sql):
+        for row in cur.execute(sql, (count, )):
             user_list.append({"id": row[0], "name": row[1], "city": row[2], "total_sales": row[3]})
         
         users = self._map_to_users(user_list)
@@ -116,7 +116,7 @@ class Sqlite(Storage):
         cur.execute('''CREATE TABLE products
                (id integer, name integer, UNIQUE(id, name))''')
         cur.execute('''CREATE TABLE order_products
-               (id integer, order_id integer, product_id, price real)''')
+               (id string, order_id integer, product_id, price real)''')
         self.__commit()
 
     def __commit(self):
