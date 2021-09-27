@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from lib.entity import *
+from datetime import datetime
 
 
 class Storage(ABC):
@@ -9,11 +10,11 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def get_orders_for_date(self, date_from: str, date_to: str, cnt=10) -> Orders:
+    def get_orders_for_date(self, date_from: datetime, date_to: datetime, cnt: int=10) -> Orders:
         pass
 
     @abstractmethod
-    def get_users_with_best_purchases(self, count: int=3) -> Users:
+    def get_users_with_best_purchases(self, cnt: int=3) -> Users:
         pass
 
     @abstractmethod

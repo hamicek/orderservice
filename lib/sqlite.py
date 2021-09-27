@@ -60,7 +60,7 @@ class Sqlite(Storage):
             orders.add_order(order)
         return orders
 
-    def get_users_with_best_purchases(self, count: int=3) -> Users:
+    def get_users_with_best_purchases(self, cnt: int=3) -> Users:
         cur = self._get_cursor()
         sql = '''SELECT
                     min(u.id),
