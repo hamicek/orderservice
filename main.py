@@ -1,6 +1,7 @@
 from lib.entity import *
 from lib.sqlite import Sqlite
 from lib.orders_service import OrdersService
+from lib.data_loader import DataLoader
 
 
 DATA_FILE_NAME = "data.ndjson.gz"
@@ -31,8 +32,12 @@ def __main__():
     d = Sqlite(DATABASE_NAME)
     d.recreate_database()
     d.connect()
-    order_service = OrdersService(DATA_FILE_NAME, d)
-    order_service.load_data()
+
+    data_loader = DataLoader()
+    orders = data_loader.load_from_file(DATA_FILE_NAME)
+
+    order_service = OrdersService(d)
+    order_service.load_data(orders)
     
     orders = order_service.storage.get_orders_for_date('2018-10-01', '2018-10-31')
     print_orders(orders)
