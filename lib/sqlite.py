@@ -77,7 +77,7 @@ class Sqlite(Storage):
                 '''
 
         user_list = []
-        for row in cur.execute(sql, (count, )):
+        for row in cur.execute(sql, (cnt, )):
             user_list.append({"id": row[0], "name": row[1], "city": row[2], "total_sales": row[3]})
         
         users = self._map_to_users(user_list)
