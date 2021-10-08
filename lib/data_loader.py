@@ -3,7 +3,7 @@ import gzip
 
 class DataLoader():
 
-    def load_from_file(self, filename: str) -> str:
+    def load_from_gzip(self, filename: str) -> str:
         orders = []
 
         with gzip.open(filename, 'rb') as f:
