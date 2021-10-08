@@ -35,7 +35,7 @@ def __main__():
     d.connect()
 
     data_loader = DataLoader()
-    orders = data_loader.load_from_file(DATA_FILE_NAME)
+    orders = data_loader.load_from_gzip(DATA_FILE_NAME)
 
     order_service = OrdersService(d)
     order_service.load_data(orders)
